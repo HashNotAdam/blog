@@ -1,7 +1,7 @@
 ---
 title: "Starting a blog"
 date: 2020-07-18T19:01:05+10:00
-slug: ""
+slug: "starting-a-blog"
 description: ""
 keywords: []
 draft: false
