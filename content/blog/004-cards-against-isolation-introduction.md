@@ -214,4 +214,4 @@ At a high level, the features are going to be:
   - create a new round
 - when all the questions have been asked, finish the game
 
-Let's getting a new project started **(coming really soon)**
+[Okay, let's get the core tools installed](/blog/cards-against-isolation-installation)
