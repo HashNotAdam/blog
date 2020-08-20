@@ -11,8 +11,8 @@ toc: false
 ---
 This part is just for those people who are new to Ruby and either haven't yet
 install Ruby and PostgreSQL or just want to see how I do it. If you're all over
-this, you can skip to the next step (COMING SOON), just make sure you have a
-version of Ruby 2.6 installed.
+this, you can skip to the [next step](/blog/cards-against-isolation-setup);
+just make sure you have a version of Ruby 2.6 installed.
 
 I'm afraid this part of the tutorial is macOS only since that is where I'm
 comfortable. The components are still relevant if you are on Linux but, if
@@ -131,7 +131,7 @@ The [Node.js](https://nodejs.org/en/) website will tell you that it "is a
 JavaScript runtime". That statement is intentionally vague given the uses for
 Node.js.
 
-You can use Node as the back-end of a web application using JavaScript the way
+You can use Node as the backend of a web application using JavaScript the way
 we are using Ruby here—in fact, a lot of people do. I choose not to do this
 because I find the JavaScript language “scrappy” thanks to years of baggage.
 While it generally doesn’t matter to your users what version of a language is
@@ -209,4 +209,4 @@ Node.js we would like to use with:
 nvm use --lts
 ```
 
-Next, we need to setup the project (COMING SOON)
+Next, we need to [setup the project](/blog/cards-against-isolation-setup)

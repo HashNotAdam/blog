@@ -67,7 +67,7 @@ for managing data so, while I have strong opinions about which database to use
 in a serious business app, you would be unable to tell the difference between
 databases in a little project like this.
 
-That’s the back-end at a high level, now what about the front-end?
+That’s the backend at a high level, now what about the frontend?
 
 One of the challenges with a multi-player card game is that there needs to be a
 way to know when another player makes a move. In the context of Cards Against
@@ -186,12 +186,12 @@ judging the round); and there is a winning player.
 ### Build approach
 
 Now that we have an idea of how this is going to be structured, there are many
-ways we could choose to build it. One way might be to start back-end heavy,
+ways we could choose to build it. One way might be to start backend heavy,
 building out the data models and the game logic and then plugging in an
 interface later. While I’m a full stack developer, the majority of my work
-involves back-end logic and so I’m naturally more comfortable there and the
+involves backend logic and so I’m naturally more comfortable there and the
 back-to-front approach is appealing. The problem with spending so much time in
-the back-end first, however, is that it can be a long time before you get any
+the backend first, however, is that it can be a long time before you get any
 real feedback (not that the red/green colours of your test suite aren’t super
 exciting). Also, if you build by feature, your git commits are going to tell a
 more cohesive story.
