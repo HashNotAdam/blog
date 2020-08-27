@@ -37,13 +37,21 @@ are many tasks where the speed difference between C and Ruby matters. One
 example would be interacting with your database. It is vital that your database
 queries are blazingly fast and so you can expect those gems to have a lot of C
 code. You’ll notice the gems with C bindings because you’ll see “Building native
-extensions. This could take a while…”. I don’t recall having any issues
-installing Rails but occasionally you’ll try to install a gem and you’ll find
-one of those little buggers will fail. Unfortunately, the errors are generally
-obscure and you just need to get good at finding the important line in the error
-message (even if you don’t understand it) and popping it into Google. You can be
-quite certain that you won’t be the first person to see the issue so don’t even
-bother trying to debug it yourself.
+extensions. This could take a while…”. Occasionally you’ll try to install a gem
+and you’ll find one of those little buggers will fail. Unfortunately, the errors
+are generally obscure and you just need to get good at finding the important line
+in the error message (even if you don’t understand it) and popping it into
+Google. You can be quite certain that you won’t be the first person to see the
+issue so don’t even bother trying to debug it yourself.
+
+I've been following this tutorial in 2 completely new macOS virtual machines,
+one High Sierra and one Catalina, and I encountered an error when Bundler tried
+to install Puma. To get around that issue I ran:
+```bash
+bundle config build.puma --with-cflags="-Wno-error=implicit-function-declaration"
+```
+and then called `bundle` again. If this doesn't work for you, Google is your
+friend.
 
 ## Create the project
 
@@ -276,4 +284,4 @@ It’s a terrible name, I know, and there is discussion about changing it but, f
 now, that’s where we are at.
 
 Once you've run that command, your code is safely in the cloud and we can start
-doing something substancial... in the next post 😉
+doing something substantial [in the next post](/blog/cards-against-isolation-authentication)

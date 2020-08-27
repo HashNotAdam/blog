@@ -105,6 +105,11 @@ installed version with:
 rbenv global 2.6.6
 ```
 
+I've found that, after first installing rbenv in the zsh shell, I needed to run
+`eval "$(rbenv init -)"` after the first time I set the global. If you run
+`ruby -v` and you don't see something that begins "ruby 2.6.6", then you also
+re-run that command.
+
 ## PostgreSQL
 
 Thanks to Homebrew, this is extremely straight forward:
@@ -192,7 +197,29 @@ echo '[ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # Thi
 echo '[ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion' >> ~/.zshrc
 ```
 Once again, you might need to replace `zshrc` with `bash_profile`; just make
-sure you read the instructions Homebrew gives you.
+sure you read the instructions Homebrew gives you. Also, remember to reload your
+config either by opening a new tab or running the appropriate command like:
+```bash
+. ~/.zshrc
+```
+or
+```bash
+. ~/.bash_profile
+```
+
+In zsh, I received the question:
+```
+Ignore insecure directories and continue [y] or abort compinit [n]?
+```
+zsh seemed to be upset about the permissions on a couple of directories. This
+happened to me in two separate and clean installations of Catalina. If you see
+the same, run `compaudit`. That will return the paths it is unhappy with and
+then you can run `sudo chmod -R 755 [some_path]` for each result. For me, that
+meant:
+```bash
+sudo chmod -R 755 /usr/local/share/zsh
+```
+After that, I could run `. ~/.zshrc` without error.
 
 To install Node.js, run:
 ```bash
