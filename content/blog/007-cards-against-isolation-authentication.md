@@ -31,7 +31,7 @@ cd ~/dev/cards_against_isolation
 
 To be able to see our site, we need to run the Rails server:
 ```bash
-./bin/rails s
+rails s
 ```
 
 But, oh no!, this is what happened for me:
@@ -61,23 +61,12 @@ In this case, the error message is in bold at the end:
 
 I wish the thing we needed to do was always so clear:
 ```bash
-./bin/rails webpacker:install
+rails webpacker:install
 ```
-
-You may ask why I always use `./bin/rails` while the instructions always say
-to simply use `rails`. When you use the command without the prefix, it is up
-to your system to pick a version of the `rails` command to call. Generally, this
-is going to be the newest version of Rails you have installed. Once you have
-many projects that are using many versions of Rails, you'll find that you get
-errors because of differences between versions. There should always be a `rails`
-command in your project in the `bin` directory that will make sure the correct
-version of Rails is called. You would get the same end result from calling
-`bundle exec rails` (just with a few more characters) so, if you see that in
-another tutorial, they are interchangeable.
 
 Once complete, we can try booting the server again:
 ```bash
-./bin/rails s
+rails s
 ```
 
 Sometimes Rails will tell you:
@@ -125,7 +114,7 @@ with (arice for me).
 
 Back in your terminal, stop the Rails server by pressing control-c and then run:
 ```bash
-./bin/rails db:setup
+rails db:setup
 ```
 
 This creates both the development and test database. We haven’t created any
@@ -136,7 +125,7 @@ projects are unusable without pre-defined data which you can put into
 
 Now, boot the server again:
 ```bash
-./bin/rails s
+rails s
 ```
 
 **SUCCESS!**
@@ -272,7 +261,7 @@ installed in the development group. We’ll use the twiddle wakka to stay within
 the 0.89.x versions. I also like to add `rubocop-performance` which gives tips
 about how to re-write your code for better performance, `rubocop-rails` which
 knows about Rails specific styles, and `rubocop-rspec` for styles related to the
-testing framework. We haven’t added Rspec yet but we may as well get all the
+testing framework. We haven’t added RSpec yet but we may as well get all the
 Rubocop stuff out of the way now.
 
 I find it easier to quickly scan my gem list when they are in alphabetical order
@@ -475,10 +464,10 @@ turns out our feature tests could be better, just knowing that there is a test
 that checks that putting the pieces together works is a huge weight off our
 shoulders.
 
-As mentioned in the introduction, my testing framework of choice is Rspec. It
+As mentioned in the introduction, my testing framework of choice is RSpec. It
 gets installed in the Gemfile in both the development and test environments.
 This might seem odd since the testing framework is only need when you are
-testing but it just allows you to use the Rspec commands without explicitly
+testing but it just allows you to use the RSpec commands without explicitly
 setting the environment. Think:
 ```bash
 bundle exec rspec
@@ -487,7 +476,7 @@ Instead of:
 ```bash
 RAILS_ENV=test bundle exec rspec
 ```
-Your Gemfile should look like this (there is a Rails specific gem for Rspec):
+Your Gemfile should look like this (there is a Rails specific gem for RSpec):
 ```ruby
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
@@ -498,7 +487,7 @@ end
 Then install it and run its installer:
 ```ruby
 bundle
-./bin/rails generate rspec:install
+rails generate rspec:install
 ```
 This will create a `spec` directory, which is where all your tests go, and a
 couple of configuration files. Those files won't match our style guide so send
@@ -510,10 +499,10 @@ Just be aware that Rubocop will be unable to fix 1 offense but you don't need to
 worry about that, it'll be gone soon.
 
 Given how much Rails does, it's a heavy framework and it will add a few seconds
-to your test boot time. Rspec defaults to not booting Rails so that, if you have
+to your test boot time. RSpec defaults to not booting Rails so that, if you have
 tests that won't need Rails, you don't need to pay the boot penalty. Not only
 will our tests rely on Rails but this isn’t the time to be digging into that
-level of optimisation so we’re going to tell Rspec to always boot Rails.
+level of optimisation so we’re going to tell RSpec to always boot Rails.
 
 One of the files created by the installer was `.rspec` which will contain:
 ```bash
@@ -537,7 +526,7 @@ setup for feature tests.
 When you are testing your frontend, you need to do things like programmatically
 find elements on the page using attributes like IDs, class names, etc. Keeping
 track of all these can get to be a bit painful but SitePrism helps brings
-structure and integrates nicely with Rspec.
+structure and integrates nicely with RSpec.
 
 Most Ruby feature tests are going to be using Capybara under the hood. Capybara
 not only provides the methods you use to interact with the page but it also
@@ -564,7 +553,7 @@ end
 ```
 
 Now we need to require these at the top of `spec/spec_helper.rb` and then add
-some configuration. I read the long comment that Rspec left in the spec_helper
+some configuration. I read the long comment that RSpec left in the spec_helper
 and then deleted it leaving me with:
 ```ruby
 # frozen_string_literal: true
@@ -597,7 +586,7 @@ git add --intent-to-add .rspec spec
 git add --patch
 git commit
 ```
-> Add and configure test suite (Rspec, SitePrism, Cuprite)
+> Add and configure test suite (RSpec, SitePrism, Cuprite)
 
 Hopefully you noticed that telling git we want to add `spec` included both files
 in this directory. If you have a lot of files to add, you can add the whole
@@ -626,7 +615,7 @@ bundle
 
 Devise has some configuration files that will need to be installed with:
 ```bash
-./bin/rails generate devise:install
+rails generate devise:install
 ```
 
 `config/initializers/devise.rb` has the settings including the email address to
@@ -727,7 +716,7 @@ logic important to what you’re trying to achieve.
 Because we want to use this model for authentication, we will use the Devise
 helper command:
 ```bash
-./bin/rails generate devise Player
+rails generate devise Player
 ```
 It’s most common to refer to people as "users" but, in an app like this, it can
 be valuable to be more specific and think of them as humans rather than as a
@@ -767,7 +756,7 @@ other commented features.
 
 Now we need to tell Rails to run the migration file:
 ```bash
-./bin/rails db:migrate
+rails db:migrate
 ```
 
 You might notice that you now have a new file, `db/schema.rb`. This is a
@@ -822,7 +811,7 @@ When testing authentication, most of the heavy lifting is done by Devise and we
 can trust that it knows what it’s doing. Since we know Rails knows how to load
 pages and we know Devise knows how to authenticate, the only thing left to test
 is whether we connected all the pieces correctly. For this, we’ll use a feature
-test (or spec in the Rspec world).
+test (or spec in the RSpec world).
 
 We added SitePrism to help us keep our feature specs tidy. It lets you create
 classes for each of your pages or reusable components that you can call from
@@ -836,7 +825,7 @@ this automatically for us and it’s easy to forget it’s even a thing that nee
 to happen. Unfortunately, our test suite doesn’t work quite the same way and it
 won’t know to go looking for our page classes in this new folder. We could add a
 require line at the top of every file that needs to use one of these SitePrism
-classes. This is actually the Rspec recommended method because it ensures that,
+classes. This is actually the RSpec recommended method because it ensures that,
 when you run only one test file, the boot time is as fast as possible. This app
 is not going to be big enough to have performance concerns and I’d rather this
 was just done for us so we’re going to pre-load all of our classes.
@@ -853,8 +842,8 @@ Dir[Rails.root.join("spec/pages/**/*.rb")].sort.each { |f| require f }
 ```
 
 Our feature tests get placed in `spec/features` so you will need to create that
-directory. Because `features` is one of the directories Rspec checks for tests,
-you don’t need to require is like the `pages` directory, Rspec will handle this.
+directory. Because `features` is one of the directories RSpec checks for tests,
+you don’t need to require is like the `pages` directory, RSpec will handle this.
 Next, create and open the file `spec/features/player_authentication_spec.rb`.
 
 We’ll start with a simple test to ensure that unauthenticated players can’t get
@@ -919,7 +908,7 @@ But how are we supposed to know what goes in the "FIXME"? That is a route
 supplied by Devise but, thankfully, Rails can tell us all the available routes
 by running:
 ```bash
-./bin/rails routes
+rails routes
 ```
 One of the results will be:
 ```
@@ -1183,7 +1172,7 @@ When you run the test now, SUCCESS!
 
 But I know you haven't actually seen anything yet so boot your Rails server:
 ```bash
-./bin/rails s
+rails s
 ```
 
 If you try to load [http://localhost:3000](http://localhost:3000) in your
@@ -1361,7 +1350,7 @@ to testing, you might wonder why we would create the player before every test.
 Wouldn't that lead to duplicate players? It is important that tests can set up
 the exact conditions necessary to verify that a particular scenario is accounted
 for. To allow for this, the database is cleared between tests. The
-`spec/rails_helper.rb` file that Rspec provided includes:
+`spec/rails_helper.rb` file that RSpec provided includes:
 ```ruby
 config.use_transactional_fixtures = true
 ```
@@ -1598,7 +1587,7 @@ Unable to find css ".alert"
 If you were to add `save_and_open_page` before the expectation, you'll see that
 the page is logged in. This is because we are confirming the player when we
 create it. We need some way to decide when to confirm the player. For this we
-can use `let` blocks which are a way to create variables in Rspec. First, let’s
+can use `let` blocks which are a way to create variables in RSpec. First, let’s
 move the player creation into a `let`.
 Change:
 ```ruby
