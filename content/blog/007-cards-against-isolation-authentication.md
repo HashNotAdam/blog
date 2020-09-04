@@ -466,7 +466,7 @@ shoulders.
 
 As mentioned in the introduction, my testing framework of choice is RSpec. It
 gets installed in the Gemfile in both the development and test environments.
-This might seem odd since the testing framework is only need when you are
+This might seem odd since the testing framework is only needed when you are
 testing but it just allows you to use the RSpec commands without explicitly
 setting the environment. Think:
 ```bash
@@ -1708,7 +1708,35 @@ context "when they enter an incorrect password" do
 end
 ```
 
-Make sure you have 5 green tests and then you're done. Time to commit:
+You should now have 5 green tests and so we can refactor. Our approach was to
+write tests that document our expectation of what the behaviour would be before
+verifying that behaviour. Normally, you would be documenting your expectations
+and then writing code to fulfil those expectations. You can't always know how
+every tiny detail will play out, however, and so you should take the time to
+consider whether adjustments are necessary.
+
+We found the elements in our form using generic CSS selectors. For instance,
+the email address field, while restricted to the `new_player` form, is just
+any input that is of type "email". Now that our tests are passing, we can take
+a look at the elements on the page and see if there is a better way.
+
+It turns out that Devise is using Rails naming conventions. It is a little
+awkward to think about because it is generating a form based upon the player
+even though the conceptual action is signing in. This isn't the recommended
+approach and, while Devise saves an enormous amount of time on apps like this,
+is certainly has its quirks.
+
+The convention for naming form inputs is `model[attribute]`. So the email
+attribute on a player is `player[email]`. We can modify `Pages::Players::SignIn`
+to use this convention like:
+```ruby
+element :email_field, "#new_player input[name='player[email]']"
+element :password_field, "#new_player input[name='player[password]']"
+```
+Now the `email_field` selector reads "get an input with the name 'player[email]'
+inside an element with the ID new_player".
+
+Make sure you still have 5 green tests and then you're done. Time to commit:
 ```bash
 bundle exec rspec
 bundle exec rubocop
@@ -1735,4 +1763,7 @@ really small pieces. Building something huge can be terribly overwhelming but
 building lots of tiny things can feel totally achievable.
 
 If you've had any issues or there is anything you want to check, you can
-[review my repository as it looked after this commit](https://github.com/HashNotAdam/cards-against-isolation/tree/c8ebf6492261e0ae617616dfc0e331a3c966181e).
+[review my repository as it looked after this commit](https://github.com/HashNotAdam/cards-against-isolation/tree/6d6a3b6c153974cc7d1b7fc5223d3675d3189b90).
+
+In [the next post](/blog/cards-against-isolation-complete-devise-testing/),
+we finish testing Devise.
