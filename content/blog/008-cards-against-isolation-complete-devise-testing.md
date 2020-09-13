@@ -13,7 +13,7 @@ In the last post, we tested authentication but we didn’t actually complete all
 the Devise related testing. We really need to make sure that players can
 register and reset their password if they forget it.
 
-# Registration
+## Registration
 
 We have a spec file, `spec/features/player_authentication_spec.rb`, for testing
 authentication so let’s start by making a similar file for registration at
@@ -757,7 +757,7 @@ git commit
 
 > Add tests for player registration
 
-# Forgot password
+## Forgot password
 
 Now that we have completed registration, this should be a breeze. We have all
 the knowledge required to fly though it, it's just a matter of applying that
@@ -1229,4 +1229,5 @@ git commit
 That's all the testing we are going to do for now. My code at this point is
 [available on GitHub](https://github.com/HashNotAdam/cards-against-isolation/tree/c10e9b5f58039663c05b073109ad78c277b0e7ac).
 
-Next week we'll hang up the testing hat and start making pretty things.
+[Next week](/blog/cards-against-isolation-base-styles) we'll hang up the testing
+hat and start making pretty things.

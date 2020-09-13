@@ -1391,17 +1391,17 @@ git commit
 ```
 > Disable Devise reconfirmable
 >  
-> When you enable the Devise confirmable module, the default is for
-> reconfirmable to also be enabled. Reconfirmable requires that email
-> addresses be re-confirmed when they are changed.
+> When you enable the Devise confirmable module, the default is for  
+> reconfirmable to also be enabled. Reconfirmable requires that email  
+> addresses be re-confirmed when they are changed.  
 >  
-> Confirmable is being used as a form of spambot protection. We should be
-> able to assume that, if someone can confirm their original address,
-> they are either not a robot or they are a robot sufficiently capable of
-> confirming email addresses and so another test is unlikely to trip them
-> up.
+> Confirmable is being used as a form of spambot protection. We should be  
+> able to assume that, if someone can confirm their original address,  
+> they are either not a robot or they are a robot sufficiently capable of  
+> confirming email addresses and so another test is unlikely to trip them  
+> up.  
 >  
-> Reconfirmable also requires an extra field in the players table that was
+> Reconfirmable also requires an extra field in the players table that was  
 > not generated
 
 When we run our tests again, we get:
