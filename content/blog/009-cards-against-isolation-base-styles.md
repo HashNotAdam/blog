@@ -172,8 +172,8 @@ will be even more ugly than before.
 
 Commit:
 ```bash
-bundle exec rubocop
-bundle exec rspec
+rubocop
+rspec
 git status
 git add --intent-to-add [paste any untracked files]
 git add --patch
@@ -396,7 +396,7 @@ we are keeping it simple, it will work well.
 
 That's it for the frame—for now at least—time to commit:
 ```bash
-bundle exec rspec
+rspec
 git add --patch
 git commit
 ```
@@ -626,7 +626,7 @@ Even though we didn't change anything that should matter, I still ran my test
 suite before committing as a way of checking that the new settings didn't break
 the site.
 ```bash
-bundle exec rspec
+rspec
 git add --patch
 git commit
 ```

@@ -69,12 +69,12 @@ quick responses from RSpec until that point.
 
 You can run just one file by appending the file path to the command like:
 ```bash
-bundle exec rspec spec/features/player_registration_spec.rb
+rspec spec/features/player_registration_spec.rb
 ```
 You can also include a line number for the test (any line number from the `it`
 to the `end` will do) to only run one test in the file:
 ```bash
-bundle exec rspec spec/features/player_registration_spec.rb:4
+rspec spec/features/player_registration_spec.rb:4
 ```
 
 I would recommend you find a shortcut that suits your workflow. I like to use
@@ -748,8 +748,8 @@ is what makes `confirmation_page.load(token: token)` work.
 And with that test complete, we have completed testing registration so we should
 commit:
 ```bash
-bundle exec rubocop
-bundle exec rspec
+rubocop
+rspec
 git add --intent-to-add spec
 git add --patch
 git commit
@@ -805,7 +805,7 @@ end
 
 If you are calling RSpec manually, now you will want to call:
 ```bash
-bundle exec rspec spec/features/player_forgotten_password_spec.rb
+rspec spec/features/player_forgotten_password_spec.rb
 ```
 
 Test error:
@@ -1217,8 +1217,8 @@ element :reset_password_button, "#new_player input[type=submit]"
 
 You should now be green and can commit again:
 ```bash
-bundle exec rubocop
-bundle exec rspec
+rubocop
+rspec
 git add --intent-to-add spec
 git add --patch
 git commit

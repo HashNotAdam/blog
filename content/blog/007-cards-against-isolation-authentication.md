@@ -269,10 +269,10 @@ so I have:
 ```bash
 group :development do
   gem 'listen', '~> 3.2'
-  gem 'rubocop', '~> 0.89.1'
-  gem 'rubocop-performance'
-  gem 'rubocop-rails'
-  gem 'rubocop-rspec'
+  gem 'rubocop', '~> 0.89.1', require: false
+  gem 'rubocop-performance', require: false
+  gem 'rubocop-rails', require: false
+  gem 'rubocop-rspec', require: false
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
@@ -302,7 +302,7 @@ config.
 
 To get Rubocop to check your code, you run:
 ```bash
-bundle exec rubocop
+rubocop
 ```
 
 For me, this returned 86 offenses because some of my choices differ from those
@@ -330,7 +330,7 @@ You’ll notice the offenses for quotes say "Style/StringLiterals". This is the
 name of the rule that is being violated and we can use it to tell Rubocop which
 offenses to correct:
 ```bash
-bundle exec rubocop --only Style/StringLiterals -a
+rubocop --only Style/StringLiterals -a
 ```
 The `-a` means "auto-correct". There is a more expressive option,
 `--auto-correct`, but I find that a lot to type regularly.
@@ -399,7 +399,7 @@ corrected with the standard option, `-a`. They believe that this is an "unsafe"
 operation and so you must pass `-A` instead. Of course, we are diligent coders
 who check every change before we commit so we will know if anything bad happens.
 ```bash
-bundle exec rubocop --only Style/FrozenStringLiteralComment -A
+rubocop --only Style/FrozenStringLiteralComment -A
 ```
 
 Now, look, Rubocop isn't the smartest tool. The frozen string literal change is
@@ -407,7 +407,7 @@ what's known as a "magic comment". There is a rule that says that there must be
 an empty line after magic comments but, when auto-correcting, it doesn't add
 that line so we need to fix that before we stage. 🤷‍♂️
 ```bash
-bundle exec rubocop --only Layout/EmptyLineAfterMagicComment -a
+rubocop --only Layout/EmptyLineAfterMagicComment -a
 git add --patch
 ```
 
@@ -416,7 +416,7 @@ this post is going down a serious
 [Yak Shaving](https://seths.blog/2005/03/dont_shave_that/) rabbit hole, we're
 just going to tell Rubocop to fix those:
 ```bash
-bundle exec rubocop -A
+rubocop -A
 git add --patch
 ```
 
@@ -434,7 +434,7 @@ Once again, stage your change, check to make sure Rubocop is happy now, and then
 it's time to commit:
 ```
 git add --patch
-bundle exec rubocop
+rubocop
 git commit
 ```
 
@@ -470,11 +470,11 @@ This might seem odd since the testing framework is only needed when you are
 testing but it just allows you to use the RSpec commands without explicitly
 setting the environment. Think:
 ```bash
-bundle exec rspec
+rspec
 ```
 Instead of:
 ```bash
-RAILS_ENV=test bundle exec rspec
+RAILS_ENV=test rspec
 ```
 Your Gemfile should look like this (there is a Rails specific gem for RSpec):
 ```ruby
@@ -493,7 +493,7 @@ This will create a `spec` directory, which is where all your tests go, and a
 couple of configuration files. Those files won't match our style guide so send
 in the cop:
 ```bash
-bundle exec rubocop -A
+rubocop -A
 ```
 Just be aware that Rubocop will be unable to fix 1 offense but you don't need to
 worry about that, it'll be gone soon.
@@ -515,7 +515,7 @@ Change this to:
 
 If everything is set up correctly, if you run:
 ```bash
-bundle exec rspec
+rspec
 ```
 you will be told:
 > 0 examples, 0 failures
@@ -581,7 +581,7 @@ start tracking the new files so run `git status` to see a list of the untracked
 files and then run `git add --intent-to-add [file_path]` for each untracked
 file. You can include multiple files in one command like:
 ```bash
-bundle exec rubocop
+rubocop
 git add --intent-to-add .rspec spec
 git add --patch
 git commit
@@ -687,12 +687,12 @@ to know that we'll see any errors.
 
 This would be a good time to commit but, first, make sure the cop is happy:
 ```bash
-bundle exec rubocop
+rubocop
 ```
 You should get a couple of offenses that the Devise installer has left us that
 you'll need to clean up.
 ```bash
-bundle exec rubocop -a
+rubocop -a
 git status
 git add --intent-to-add [paste the untracked files/directories here]
 git add --patch
@@ -730,7 +730,7 @@ You should have 3 new files in your project: a database migration, a model, and
 a spec (test file). Of course, the installer will not have inserted the frozen
 string literals so:
 ```bash
-bundle exec rubocop -A
+rubocop -A
 ```
 
 The database migration gives Active Record instructions on how to create the
@@ -789,7 +789,7 @@ spec directory (`spec/models`) which includes the `player_spec.rb` file.
 Aaaannnnndddd another commit. That schema file is not a particularly fun read
 and we can trust Rails to keep it updated so let's just add it.
 ```ruby
-bundle exec rubocop
+rubocop
 git add db/schema.rb
 git status
 git add --intent-to-add [paste the untracked files/directories here]
@@ -932,7 +932,7 @@ As part of the TDD process, you:
 
 So, let's run the test suite:
 ```bash
-bundle exec rspec
+rspec
 ```
 
 The first error should be:
@@ -1068,7 +1068,7 @@ should be forwarded to the `index` action of the `DashboardsController`.
 
 Okay, run your test suite again:
 ```bash
-bundle exec rspec
+rspec
 ```
 and then you'll get:
 ```
@@ -1738,8 +1738,8 @@ inside an element with the ID new_player".
 
 Make sure you still have 5 green tests and then you're done. Time to commit:
 ```bash
-bundle exec rspec
-bundle exec rubocop
+rspec
+rubocop
 git add --intent-to-add app spec
 git add --patch
 git commit
