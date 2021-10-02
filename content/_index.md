@@ -1,5 +1,5 @@
 ---
 heading: "Hi, I'm Adam"
-subheading: "Musings of a developer & entrepreneur"
+subheading: "Sometimes I write things"
 handle: "HashNotAdam"
 ---
