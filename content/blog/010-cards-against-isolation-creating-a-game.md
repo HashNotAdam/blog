@@ -890,8 +890,8 @@ Open the new migration (`db/migrate/[date]_create_games_players.rb`):
 class CreateGamesPlayers < ActiveRecord::Migration[6.0]
   def change
     create_table :games_players, id: false do |t|
-      t.references :game, null: false, index: true, foreign_key: true
-      t.references :player, null: false, index: true, foreign_key: true
+      t.references :game, null: false, foreign_key: true
+      t.references :player, null: false, foreign_key: true
       t.timestamps
     end
   end

@@ -130,110 +130,15 @@ compatible between versions. If/when you upgrade in the future, make sure you
 read the instructions Homebrew gives you. They will always give you a command
 you can run that migrates your data from the old version to the new version.
 
-## Node.js
+## Yarn
 
-The [Node.js](https://nodejs.org/en/) website will tell you that it "is a
-JavaScript runtime". That statement is intentionally vague given the uses for
-Node.js.
+Finally, Yarn is a package manager for JavaScript which saves you searching for
+and manually downloading every JavaScript library you require and ensures the
+correct versions of those libraries are maintained.
 
-You can use Node as the backend of a web application using JavaScript the way
-we are using Ruby here—in fact, a lot of people do. I choose not to do this
-because I find the JavaScript language “scrappy” thanks to years of baggage.
-While it generally doesn’t matter to your users what version of a language is
-running your server, the JavaScript language needs to maintain a lot of
-backwards compatibility because it runs in browsers. If core parts of JavaScript
-were changed to meet my preferences, we would end up in a situation where sites
-may or may not work depending on which browser version you are using and when
-the site was last updated—this would be a total nightmare.
-
-While JavaScript frameworks have been getting better and better—and some have
-been trying to copy Rails—I’ve never felt as productive building server-side
-JavaScript as I am on Ruby.
-
-Finally, the asynchronous nature of JavaScript can
-be tough to work with. It is common that, when you call a method in JavaScript,
-your application won’t wait for a response before continuing to the next task.
-Later, when the method does respond, some form of “callback” is triggered so
-that you can act on that information. This means your brain needs to
-conceptualise events happening out of order. While there are mechanisms for
-dealing with this (that would take us way too _far_ off topic to explain) they
-come with error management concerns that I’m not particularly interested in
-spending my time on.
-
-Every developer needs to work out what makes them happy. Some people love
-JavaScript; it’s not for me.
-
-So why are we even taking the time to go on a tangent discussing a thing I don’t
-even like‽ Well, JavaScript is _the_ language of the browser and there are very
-few sites these days that don't have at least some JavaScript.
-
-You can write perfectly great code without having Node.js installed but it's
-very common these days to write JavaScript in a way that maximises developer
-satisfaction and then have build tools package it up in the best way for the
-browser. For example, since the JavaScript needs to be sent to the browser, and
-larger files take longer to send, we use tooling to minify our code (remove any
-unnecessary spaces and new lines and use tricky techniques to reduce the amount
-of text like using small and obscure variable names). Also, older browsers may
-not understand newer JavaScript syntax and so we can write modern code and trust
-the tooling to convert it into something that everyone can run and enjoy.
-
-It is entirely acceptable to install [Node.js](https://nodejs.org/en/) via the
-instructions on their website. As with Ruby, however, I like to use an
-environment manager to keep my versions aligned. For this, I use
-[nvm](https://github.com/nvm-sh/nvm) (Node Version Manager) which can be
-installed with:
+Yarn can also be installed via Homebrew:
 ```bash
-brew install nvm
-```
-Check the notes Homebrew gives you but it told me to run:
-```bash
-mkdir ~/.nvm
-```
-and then add some more configuration to my `~/.zshrc`:
-```bash
-echo -e '\n# Node version manager' >> ~/.zshrc
-echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.zshrc
-echo '[ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm' >> ~/.zshrc
-echo '[ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion' >> ~/.zshrc
-```
-Once again, you might need to replace `zshrc` with `bash_profile`; just make
-sure you read the instructions Homebrew gives you. Also, remember to reload your
-config either by opening a new tab or running the appropriate command like:
-```bash
-. ~/.zshrc
-```
-or
-```bash
-. ~/.bash_profile
-```
-
-In zsh, I received the question:
-```
-Ignore insecure directories and continue [y] or abort compinit [n]?
-```
-zsh seemed to be upset about the permissions on a couple of directories. This
-happened to me in two separate and clean installations of Catalina. If you see
-the same, run `compaudit`. That will return the paths it is unhappy with and
-then you can run `sudo chmod -R 755 [some_path]` for each result. For me, that
-meant:
-```bash
-sudo chmod -R 755 /usr/local/share/zsh
-```
-After that, I could run `. ~/.zshrc` without error.
-
-To install Node.js, run:
-```bash
-nvm install --lts
-```
-LTS, or long-term support, just means a stable version that is supported for
-longer than other releases. While it is probably fine to use the latest version
-of Node.js, LTS versions are released every year, do everything we will need for
-this project, and we can expect them to be bug free.
-
-Like with Ruby and rbenv, we will want to explicitly tell nvm which version of
-Node.js we would like to use with:
-```bash
-nvm use --lts
+brew install yarn
 ```
 
 Next, we need to [setup the project](/blog/cards-against-isolation-setup)

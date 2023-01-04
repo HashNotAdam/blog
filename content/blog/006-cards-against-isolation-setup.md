@@ -9,7 +9,7 @@ tags: [development, tutorial]
 math: false
 toc: false
 ---
-Now that Ruby, Postgres, and Node are installed, we can setup a new project.
+Now that Ruby, Postgres, and Yarn are installed, we can setup a new project.
 
 ## Installing Rails
 
@@ -23,7 +23,7 @@ It's a good idea for us to synchronise our versions of Rails so there aren't
 differences between the syntax I use and what Rails is expecting. Given that,
 the command is:
 ```bash
-gem install rails -v 6.0.3.2
+gem install rails -v 6.0.3.4
 ```
 
 In the same way your application will depend upon Rails, Rails also depends upon
@@ -72,7 +72,7 @@ across users and computers.
 
 The command we'll use to create the project directory is:
 ```bash
-rails _6.0.3.2_ new cards_against_isolation \
+rails _6.0.3.4_ new cards_against_isolation \
   --database=postgresql \
   --skip-action-mailbox \
   --skip-action-text \
@@ -85,7 +85,7 @@ rails _6.0.3.2_ new cards_against_isolation \
 While that is working away—it will take a bit if this is your first Rails app
 on this version of Ruby—let’s break down what that all means.
 
-`rails _6.0.3.2_`: normally you wouldn't see that second part. The `rails`
+`rails _6.0.3.4_`: normally you wouldn't see that second part. The `rails`
 command automatically installs the latest version available, however, I want to
 be sure we're both on the same page so I'm explicitly telling it which version
 to use.
@@ -136,16 +136,6 @@ narrative not only helps you think about what you are testing but, when reading
 the tests, you can easily understand both what the application does and what is
 being tested. We'll add Rspec later.
 
-Once the installation is complete, it might tell you:
-> Yarn not installed. Please download and install Yarn
-
-You may not be surprised to see you do this by running:
-```bash
-brew install yarn
-```
-It's worth noting that this will install another version of Node.js but, since
-we are using nvm, we know that the version we installed is what will be used.
-
 Now, with everything installed, we need to change to the new directory:
 ```bash
 cd cards_against_isolation
@@ -157,6 +147,24 @@ the project. As time progresses and you use newer versions of Ruby for newer
 projects, this file will tell your Ruby environment manager to change version.
 My global version of Ruby is 2.7.1 but, as soon as I `cd` into this project,
 rbenv automatically switches from 2.7.1 to 2.6.6.
+
+### MySQL installation error
+
+While this tutorial (and I) prefer PostgreSQL, I did test this process using
+MySQL and ran into the following issue:
+```
+linking shared-object mysql2/mysql2.bundle
+ld: library not found for -lssl
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+```
+
+The solution to errors while compiling native binaries is different depending on
+the very specific language  of the error but, in this case, I solved the problem
+by running the following:
+```bash
+brew install openssl
+export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/opt/openssl/lib/
+```
 
 ## Your first commit
 
@@ -221,9 +229,12 @@ subsequent lines serve as the message body. You want your message to convey what
 changed but it’s more important to explain why the changes were made.
 
 Given all we have done is install Rails for a personal game app, I think it’s
-acceptable to break the rules a little and simply write “Install Rails”. You
-should expect commit messages to become more descriptive once we are making
-decisions that aren’t so stupendously mind-numbing.
+acceptable to break the rules a little and simply write:
+> Install Rails
+
+Make sure you save and close the commit window. You should expect commit
+messages to become more descriptive once we are making decisions that aren’t so
+stupendously mind-numbing.
 
 ## Push to the repository
 
@@ -231,16 +242,25 @@ Now is a great time to configure our git repository. If you don’t intend to sa
 this code in the cloud you can skip this step but I would strongly recommend you
 push everything up.
 
-Whether you use GitHub, Bitbucket, or another provider, the process is pretty
-much the same. First you need to create your new remote repository. This can be
-done via their web interface or many of the providers also have desktop apps.
+Before pushing, we should change the name of our branch. By default, git will
+name your primary branch "master". This terminology was inspired by enslavement
+and it best we move past it. Unfortunately, see language like this a lot in
+technology including master/slave database configurations and white/blacklists.
+Thankfully, it’s easy to change our branch name to "main":
+```bash
+git branch -M main
+```
+
+Whether you use GitHub, Bitbucket, or another provider, the process of getting
+your code to the cloud is pretty much the same. First you need to create your
+new remote repository. This can be done via their web interface or many of the
+providers also have desktop apps.
 
 You’ll need to give your remote repo a name. This will become part of the URL so
 pick something meaningful. GitHub has suggested that, if I need inspiration,
 `furry-waddle` might be a good option. While I appreciate this fine suggestion,
 I’m going to stick with `cards-against-isolation`. If you’d prefer to call yours
 `furry-waddle`, that’s totally fine so long as it is meaningful to you.
-
 
 You’ll probably be given 2 URLs, one HTTPS and one SSH. While HTTPS is the
 easiest to get started with, you’ll be forced to authenticate every time you
@@ -271,17 +291,15 @@ git push
 ```
 you will be told:
 ```bash
-fatal: The current branch master has no upstream branch.
+fatal: The current branch main has no upstream branch.
 To push the current branch and set the remote as upstream, use
 
-    git push --set-upstream origin master
+    git push --set-upstream origin main
 ```
 Not surprisingly, you can copy and paste that command. You only need to do this
 once per branch. When you are working with others, you should really be creating
 a new branch for every feature where a feature should (ideally) be small enough
-to complete within a day. For this, we will only use the default branch, master.
-It’s a terrible name, I know, and there is discussion about changing it but, for
-now, that’s where we are at.
+to complete within a day. For this, we will only use the main branch.
 
 Once you've run that command, your code is safely in the cloud and we can start
 doing something substantial [in the next post](/blog/cards-against-isolation-authentication)

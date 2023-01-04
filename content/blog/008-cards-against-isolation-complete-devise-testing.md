@@ -46,12 +46,13 @@ be clicked. And we need a concept of a registration page to check that clicking
 the link took us there.
 ```ruby
 it "takes them to the registration page" do
-  signin_page = Pages::Players::SignIn.new
-  signin_page.load
-
-  signin_page.registration_link.click
-
+  sign_in_page = Pages::Players::SignIn.new
   registration_page = Pages::Players::Registration.new
+
+  sign_in_page.load
+
+  sign_in_page.registration_link.click
+
   expect(registration_page).to be_displayed
 end
 ```
@@ -74,7 +75,7 @@ rspec spec/features/player_registration_spec.rb
 You can also include a line number for the test (any line number from the `it`
 to the `end` will do) to only run one test in the file:
 ```bash
-rspec spec/features/player_registration_spec.rb:4
+rspec spec/features/player_registration_spec.rb:5
 ```
 
 I would recommend you find a shortcut that suits your workflow. I like to use
@@ -91,170 +92,10 @@ its own terminal window and will watch you to see when you make file changes.
 
 You designate tasks to be performed in response to file changes and those tasks
 can be reasonably intelligent. For instance, the Rubocop task will only check
-your changes, not the whole project, and the RSpec task can work out which spec
+your changes—not the whole project—and the RSpec task can work out which spec
 file relates to the changes and run just those specs. I still really like Guard
 but, when you are working on a team, the team needs to agree to it whereas you
 can add an extension to your editor without disrupting others.
-
-Test error:
-```
-Failure/Error: signin_page.registration_link.click
-
-NoMethodError:
-  undefined method `registration_link'
-```
-
-The variable, `signin_page`, which is an instance of `Pages::Players::SignIn`,
-doesn't yet know about the registration link, so let's add it:
-```ruby
-element :login_button, "#new_player input[type=submit]"
-
-element :registration_link, "#new_player FIX_ME"
-
-element :alert, ".alert"
-```
-Devise doesn't make it easy for us to find this link. The HTML displayed on the
-page is simply:
-```html
-<a href="/players/sign_up">Sign up</a>
-```
-so we can either find a link with the href "/players/sign_up" or where the text
-reads "Sign up". Generally, I wouldn't like to hook into those attributes
-because they are implementation details. We only want to test that pressing the
-registration link takes us to the registration page, whether the text says
-"Sign up" or "Register" or if the link is "/players/sign_up" or "/register"
-really doesn’t matter. Devise does offer a way to override the default templates
-but we should test that things work first and then we can refactor later. If we
-were to change things now and the functionality was broken, we wouldn’t know if
-we broke it in the refactor or it was never working.
-
-The easiest attribute to find will be the path, or href. In the same way we used
-the Rails routes to find the path of the sign-in page, we can find the path for
-registration.
-
-Running `rails routes` includes:
-
-Prefix                  | Verb | URI Pattern                | Controller#Action
-------------------------|------|----------------------------|-------------------------
-new_player_registration | GET  | /players/sign_up(.:format) | devise/registrations#new
-
-This suggests we could find the link by using:
-```ruby
-element :registration_link, "a[href='#{new_player_registration_path}']"
-```
-That doesn't quite work, though, I'm afraid. Previously we saw that syntax in a
-test file. It comes from the Rails URL helpers which RSpec loads in our tests
-and Rails loads into controllers, but the helpers aren't automatically available
-everywhere. That doesn't mean we can't use them; it just requires a little more
-code.
-
-The path methods come from the Rails URL helpers which are available from
-`Rails.application.routes.url_helpers`; this means we can get the
-`new_player_registration_path` from
-`Rails.application.routes.url_helpers.new_player_registration_path`. That's a
-hell of a lot to read, though, which makes it hard to quickly understand what is
-going on. Instead, we can create a method with a descriptive name:
-```ruby
-module Pages
-  module Players
-    class SignIn < SitePrism::Page
-      class << self
-        private
-
-        def registration_path
-          url_helpers = Rails.application.routes.url_helpers
-          url_helpers.new_player_registration_path
-        end
-      end
-
-      set_url "/players/sign_in"
-
-      element :email_field, "#new_player input[name='player[email]']"
-      element :password_field, "#new_player input[name='player[password]']"
-      element :login_button, "#new_player input[type=submit]"
-
-      element :registration_link, "a[href='#{registration_path}']"
-
-      element :alert, ".alert"
-    end
-  end
-end
-```
-We call `element` inside the class, rather than inside a method, which means it
-is run in the class scope:
-```ruby
-Pages::Players::SignIn.element # this method exists
-
-signin_page = Pages::Players::SignIn.new
-signin_page.element # this method does not
-```
-This means the method we create needs to be in the class scope otherwise we need
-to call `new` like `new.registration_path`. One way to create a method in the
-class scope is to prefix the name with `self.`:
-```ruby
-def self.registration_path
-  url_helpers = Rails.application.routes.url_helpers
-  url_helpers.new_player_registration_path
-end
-```
-This creates a public class method called `registration_path`:
-```ruby
-Pages::Players::SignIn.registration_path
-# "/players/sign_up"
-```
-That would work for our needs but there are two things to consider:
-1. once a method is public, you should consider that you are now dedicated to
-maintaining it and avoiding changing its interface; and
-1. the SignIn page class is now publically responsible for providing the URL
-for the registration page which really isn't in any way connected with its
-reason for existing.
-
-By making the method private, we can use it in our class without creating an
-expectation that another class can rely upon it. Unfortunately, the standard
-`private` method call doesn’t work with class methods. Saying this, class
-methods are actually just instance methods of the singleton class and instance
-methods can be made private.
-
-Woah, woah, woah… the what‽
-
-Languages that are inspired by Smalltalk, Ruby included, have the concept of a
-"metaclass". The class of a class is this metaclass or singleton class. When you
-create a class method, they go into this singleton class. If you are unfamiliar
-with this concept, you absolutely should take the time to watch
-[Nadia Odunayo's](https://twitter.com/nodunayo) talk
-[The Case Of The Missing Method - A Ruby Mystery Story](https://www.nadiaodunayo.com/speaking/the-case-of-the-missing-method-a-ruby-mystery-story).
-It is absolutely one of the best talks I've ever seen and it takes this concept
-that I just made sound super-confusing and explains it in a way that is fun and
-easy to understand.
-
-To access the singleton class we use the syntax:
-```ruby
-class << self
-end
-```
-and in there we can call the `private` method:
-```ruby
-class << self
-  private
-end
-```
-so that, when we add our new method:
-```ruby
-class << self
-  private
-
-  def registration_path
-    ...
-  end
-end
-```
-it is available in the class scope but it isn't being presented as a trustworthy
-method that can be relied upon.
-
-I think it would be nicer if the method definition came after the call to
-`element`. Unfortunately, Ruby doesn't first parse the file and then run it, it
-will execute the request to get the `registration_path` when it sees it. If the
-method hasn't been defined before it is called, an error will be raised.
 
 Test error:
 ```
@@ -278,12 +119,51 @@ end
 
 Test error:
 ```
+Failure/Error: sign_in_page.registration_link.click
+
+NoMethodError:
+  undefined method `registration_link'
+```
+
+The variable, `sign_in_page`, which is an instance of `Pages::Players::SignIn`,
+doesn't yet know about the registration link, so let's add it:
+```ruby
+element :login_button, "#new_player input[type=submit]"
+
+element :registration_link, "FIX_ME"
+
+element :alert, ".alert"
+```
+Devise doesn't make it easy for us to find this link. The HTML displayed on the
+page is simply:
+```html
+<a href="/players/sign_up">Sign up</a>
+```
+so we can either find a link with the href "/players/sign_up" or where the text
+reads "Sign up". Generally, I wouldn't like to hook into those attributes
+because they are implementation details. We only want to test that pressing the
+registration link takes us to the registration page, whether the text says
+"Sign up" or "Register" or if the link is "/players/sign_up" or "/register"
+really doesn’t matter. Devise does offer a way to override the default templates
+but we should test that things work first and then we can refactor later. If we
+were to change things now and the functionality was broken, we wouldn’t know if
+we broke it in the refactor or it was never working.
+
+The easiest attribute to find will be the path, or href:
+```ruby
+element :registration_link, "a[href='/players/sign_up']"
+```
+
+This link is _not_ inside the form so we omit "#new_player".
+
+Test error:
+```
 Failure/Error: expect(registration_page).to be_displayed
 
 SitePrism::NoUrlMatcherForPageError:
   SitePrism::NoUrlMatcherForPageError
 ```
-Set the url that we found earlier:
+Set the url that we found earlier in the registration page class:
 ```ruby
 class Registration < SitePrism::Page
   set_url "/players/sign_up"
@@ -348,10 +228,10 @@ context "when the registration form is filled in correctly" do
       to change(Player, :count).by 1
 
     new_player = Player.find_by(email: "player@example.com")
-    expect(new_player.confirmed?).to be false
+    expect(new_player).not_to be_confirmed
 
-    signin_page = Pages::Players::SignIn.new
-    expect(signin_page).to be_displayed
+    sign_in_page = Pages::Players::SignIn.new
+    expect(sign_in_page).to be_displayed
   end
 end
 ```
@@ -375,10 +255,20 @@ Then we want to know that, while the player is in the database, they have not
 been confirmed:
 ```ruby
 new_player = Player.find_by(email: "player@example.com")
+expect(new_player).not_to be_confirmed
+```
+
+"be_confirmed" is a dynamically called method. There isn't an RSpec called
+"be_confirmed" but it will automatically grab whatever comes after "be_" and
+check that method as a question. This particular line is the equivilent of:
+```ruby
 expect(new_player.confirmed?).to be false
 ```
-That `new_player.confirmed?` was an educated guess that turned out to be
-correct but Devise does list it in the
+but it reads more like a sentence in our story as "expect new player not to be
+confirmed".
+
+I was making an educated guess that "new_player" had a "confirmed?" method. It
+turned out to be correct but Devise does list it in the
 [documentation for confirmable](https://www.rubydoc.info/github/heartcombo/devise/master/Devise/Models/Confirmable).
 
 And finally, we redirect back to the sign-in page.
@@ -391,10 +281,10 @@ NoMethodError:
   undefined method `email_field'
 ```
 
-Interestingly, Devise uses the same ID for the form on the registration page as
-the sign-in page, `new_player`, and it continues to use the Rails form naming
-conventions. You can assume that each input element will have a name attribute
-of `model[attribute]` or, in this case, `player[email]`:
+Devise uses the same ID for the form on the registration page as the sign-in
+page, `new_player`, and it continues to use the Rails form naming conventions.
+You can assume that each input element will have a name attribute of
+`model[attribute]` or, in this case, `player[email]`:
 ```ruby
 class Registration < SitePrism::Page
   set_url "/players/sign_up"
@@ -470,7 +360,7 @@ Now we can fill in the bodies of the remaining tests. I know from testing the
 page manually that Devise uses its own error messages for this page, not the
 Rails flash messages that are used for sign-in. I'm not really sure why this
 discrepancy exists. These errors are only shown when there is an issue related
-to the form submission and, as such, as can simply test that an error is shown,
+to the form submission and, as such, we can simply test that an error is shown,
 not what the error is. This goes back to the idea that we are not testing
 implementation details—we are not interested in the specific words shown,
 only that the expected reaction occurs.
@@ -696,6 +586,7 @@ it "confirms their account" do
     to change { unconfirmed_player.reload.confirmed? }.to true
 end
 ```
+
 Previously when we used the `change` method we passed the parameters in
 parentheses (`change(Player, :count)`) but now we are using a block. This is
 because the first option only supports one method call and we are chaining two
@@ -778,10 +669,11 @@ let(:registration_page) { Pages::Players::Registration.new }
 
 context "when a player clicks the registration link" do
   it "takes them to the registration page" do
-    signin_page = Pages::Players::SignIn.new
-    signin_page.load
+    sign_in_page = Pages::Players::SignIn.new
 
-    signin_page.registration_link.click
+    sign_in_page.load
+
+    sign_in_page.registration_link.click
 
     expect(registration_page).to be_displayed
   end
@@ -793,10 +685,11 @@ let(:forgotten_password_page) { Pages::Players::ForgottenPassword.new }
 
 context "when a player clicks the forgotten password link" do
   it "takes them to the forgotten password page" do
-    signin_page = Pages::Players::SignIn.new
-    signin_page.load
+    sign_in_page = Pages::Players::SignIn.new
 
-    signin_page.forgotten_password_link.click
+    sign_in_page.load
+
+    sign_in_page.forgotten_password_link.click
 
     expect(forgotten_password_page).to be_displayed
   end
@@ -810,7 +703,7 @@ rspec spec/features/player_forgotten_password_spec.rb
 
 Test error:
 ```
-Failure/Error: signin_page.forgotten_password_link.click
+Failure/Error: sign_in_page.forgotten_password_link.click
 
 NoMethodError:
   undefined method `forgotten_password_link'
@@ -842,24 +735,8 @@ actions should create records and we only want to load a page.
 
 Add the `forgotten_password_link` element to `Pages::Players::SignIn`:
 ```ruby
-class << self
-  private
-
-  def registration_path
-    url_helpers = Rails.application.routes.url_helpers
-    url_helpers.new_player_registration_path
-  end
-
-  def forgotten_password_path
-    url_helpers = Rails.application.routes.url_helpers
-    url_helpers.new_player_password_path
-  end
-end
-
-...
-
-element :registration_link, "a[href='#{registration_path}']"
-element :forgotten_password_link, "a[href='#{forgotten_password_path}']"
+element :registration_link, "a[href='/players/sign_up']"
+element :forgotten_password_link, "a[href='/players/password/new']"
 ```
 
 Test error:
@@ -924,7 +801,7 @@ forgotten password functionality to work (as with confirmation) so I checked
 `config/schema.rb` looking for something that made sense.
 
 The first test will be very similar to
-`it "creates a new, unconfirmed player" do` in registration. For this test to
+`it "creates a new, unconfirmed player"` in registration. For this test to
 work, however, we are going to need to have a confirmed player in the database
 (you can't reset the password for a player that doesn't exist). A confirmed
 player is something we are going to need regularly throughout our testing. The
@@ -976,7 +853,7 @@ Dir[Rails.root.join("spec/support/**/*.rb")].sort.each { |f| require f }
 As always, commit this as a separate story arc:
 ```
 git add --intent-to-add spec/support
-git add --patch Gemfile* spec/rails_helper.rb The send_rese/support
+git add --patch Gemfile* spec/rails_helper.rb spec/support
 git commit
 ```
 
@@ -1121,6 +998,7 @@ context "when the player clicks the password reset link in their email" do
   end
 end
 ```
+
 The method `send_reset_password_instructions` will create the
 `reset_password_token` on the player. Devise encrypts the token and so the token
 stored to `reset_password_token` is different from the one used in the URL. I
@@ -1178,6 +1056,7 @@ NoMethodError:
   undefined method `password_field'
 ```
 
+Add the element to the page class:
 ```ruby
 set_url "/players/password/edit?reset_password_token={token}"
 
@@ -1192,6 +1071,7 @@ NoMethodError:
   undefined method `password_confirmation_field'
 ```
 
+Now you can add the confirmation field:
 ```ruby
 element :password_field, "#new_player input[name='player[password]']"
 element :password_confirmation_field,
@@ -1208,6 +1088,7 @@ NoMethodError:
   undefined method `reset_password_button'
 ```
 
+And, finally, the submit button:
 ```ruby
 element :password_field, "#new_player input[name='player[password]']"
 element :password_confirmation_field,
@@ -1222,12 +1103,13 @@ rspec
 git add --intent-to-add spec
 git add --patch
 git commit
+git push
 ```
 
 > Add tests for player forgotten password
 
 That's all the testing we are going to do for now. My code at this point is
-[available on GitHub](https://github.com/HashNotAdam/cards-against-isolation/tree/c10e9b5f58039663c05b073109ad78c277b0e7ac).
+[available on GitHub](https://github.com/HashNotAdam/cards-against-isolation/commit/8cd8c9e230ae4fac0563cfe28e258c58177a3c03).
 
 [Next week](/blog/cards-against-isolation-base-styles) we'll hang up the testing
 hat and start making pretty things.

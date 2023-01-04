@@ -34,45 +34,10 @@ To be able to see our site, we need to run the Rails server:
 rails s
 ```
 
-But, oh no!, this is what happened for me:
-[
-  ![Terminal window showing a failure](/blog/007-cards-against-isolation-authentication/webpacker-fail.png)
-](/blog/007-cards-against-isolation-authentication/webpacker-fail.png)
-
-This happened because I decided I was too good for the instructions. You might
-recall, in the last post, Rails told us:
-> Yarn not installed. Please download and install Yarn
-
-Of course, if I was following the Rails installation instructions, it would have
-told me to install Yarn before trying to create a new project.
-
-I could have changed the previous post to hide this but, two things:
-1. we all either miss something in the docs or just choose not to read them and
-these things will happen so it's better we admit that; and
-1. it's a good opportunity to practice reading error messages.
-
-This one is, thankfully, quite easy to read—many will not be so friendly. If you
-are not used to reading error messages, you should start by initially ignoring
-the backtrace (the list of file paths). While the backtrace can be vital to
-debugging, until you know what you're debugging, it's just mental clutter. 
-
-In this case, the error message is in bold at the end:
->	Webpacker configuration file not found /Users/arice/dev/cards_against_isolation/config/webpacker.yml. Please run rails webpacker:install
-
-I wish the thing we needed to do was always so clear:
-```bash
-rails webpacker:install
-```
-
-Once complete, we can try booting the server again:
-```bash
-rails s
-```
-
 Sometimes Rails will tell you:
-> \=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=  
->  Your Yarn packages are out of date!  
->  Please run `yarn install --check-files` to update.  
+> \=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=
+>  Your Yarn packages are out of date!
+>  Please run `yarn install --check-files` to update.
 > \=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=\=
 
 If so, just run:
@@ -134,18 +99,8 @@ rails s
   ![Rails landing page saying Yay! You're on Rails!](/blog/007-cards-against-isolation-authentication/youre-on-rails.png)
 ](/blog/007-cards-against-isolation-authentication/youre-on-rails.png)
 
-Now is a great time to create another commit. First stop the Rails server with
-control-c and then:
-```bash
-git add .
-git commit
-```
-
-Let's be a little more descriptive with our commit message this time:
-> Install Webpacker  
->
-> This should have occurred during project creation, however, yarn was not
-installed before calling \`rails new\`
+We won't be using the browser for a little bit so stop the Rails server with
+control-c.
 
 ## Dependencies
 
@@ -230,7 +185,7 @@ If a dependency is inside a `group` block, it will only be installed in those
 environments otherwise it will be installed in all environments. For example,
 Rails is not inside a group so it will be installed in development, test, and
 production. On the other hand, byebug is written as:
-```bash
+```ruby
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
@@ -258,7 +213,7 @@ thrust upon you. If you are skipping this step, you can
 
 You would never do style guide checks in test or production so Rubocop gets
 installed in the development group. We’ll use the twiddle wakka to stay within
-the 0.89.x versions. I also like to add `rubocop-performance` which gives tips
+the 1.x versions. I also like to add `rubocop-performance` which gives tips
 about how to re-write your code for better performance, `rubocop-rails` which
 knows about Rails specific styles, and `rubocop-rspec` for styles related to the
 testing framework. We haven’t added RSpec yet but we may as well get all the
@@ -269,7 +224,7 @@ so I have:
 ```bash
 group :development do
   gem 'listen', '~> 3.2'
-  gem 'rubocop', '~> 0.89.1', require: false
+  gem 'rubocop', '~> 1.2', require: false
   gem 'rubocop-performance', require: false
   gem 'rubocop-rails', require: false
   gem 'rubocop-rspec', require: false
@@ -548,7 +503,7 @@ group after the development group and then run `bundle`:
 ```ruby
 group :test do
   gem "cuprite", "~> 0.11.0"
-  gem "site_prism", "~> 3.6.0"
+  gem "site_prism", "~> 3.7.0"
 end
 ```
 
@@ -635,7 +590,7 @@ the development and test settings and leave another note to come back to the
 production URL. Open `config/environments/development.rb`, find the existing
 Action Mailer settings, and add the example that was provided (but maybe with
 double quotes):
-```
+```ruby
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
 
@@ -860,8 +815,8 @@ The convention is that controller names are pluralised, so we know we are going
 to end up with a DashboardsController. We also know that each page we test is
 going to need its own SitePrism class so it seems to make sense to follow the
 controller convention and create "dashboards" page classes. Inside our
-controllers, we are going to be using the names "index", "new", and "edit" so I
-figure those make for good class names.
+controllers, we are going to be using action titles such as "index", "show",
+"new", and "edit" so I figure those make for good class names.
 
 Given all this, the test file looks like this:
 ```ruby
@@ -870,16 +825,18 @@ Given all this, the test file looks like this:
 describe "Player authentication", type: :feature do
   context "when the player is not authenticated" do
     it "sends them to the sign-in page" do
-      dashboard = Pages::Dashboards::Index.new
+      dashboard = Pages::Dashboards::Show.new
+      sign_in_page = Pages::Players::SignIn.new
+
       dashboard.load
-      expect(dashboard.current_path).to eq("FIXME")
+      expect(sign_in_page).to be_displayed
     end
   end
 end
 ```
 
 Let’s break that down. As you might guess, `describe` is the description of the
-feature we are testing. This is any meaningful string that explains the
+feature we are testing. This is any meaningful statement that explains the
 overarching concept. A `context` explains the situation, or group of situations,
 you are testing. Finally, the `it` statement describes what is being tested and
 wraps the actual test. You want these to tell a story about the behaviour that
@@ -888,7 +845,7 @@ non-developer—and put themselves into the mindset of the journey.
 
 Now we get into the juicy bits.
 ```ruby
-dashboard = Pages::Dashboards::Index.new
+dashboard = Pages::Dashboards::Show.new
 ```
 At this point, this is essentially made up based on the assumptions made above.
 That class doesn’t exist, it’s just an idea for how I think this is going to
@@ -902,32 +859,20 @@ Once the page has been loaded, we can inspect it to see if it did what we
 wanted. In this case, we want to know that it didn’t go to the dashboard but,
 instead, the player sign-in page:
 ```ruby
-expect(dashboard.current_path).to eq("FIXME")
+expect(sign_in_page).to be_displayed
 ```
-But how are we supposed to know what goes in the "FIXME"? That is a route
-supplied by Devise but, thankfully, Rails can tell us all the available routes
-by running:
-```bash
-rails routes
-```
-One of the results will be:
-```
-new_player_session GET    /players/sign_in(.:format)          devise/sessions#new
-```
-That sounds reasonable; "players" is what we called our model and "sign_in" is
-the action we want them to take. We should be able to use
-`new_player_session_path` in our test like:
+The player sign-in page class also doesn't exist yet but I know I want to test
+that the sign-in page is being shown so it seems logical that I need a concept
+of a sign-in page.
 ```ruby
-expect(dashboard.current_path).to eq(new_player_session_path)
+sign_in_page = Pages::Players::SignIn.new
 ```
-At this point, I haven't seen this test working. It could turn out that
-`new_player_session_path` is actually not the correct path. That's okay; we're
-just laying out what we think will happen and, if it's wrong, we'll fix it.
 
-As part of the TDD process, you:
+Now, we know our tests can't work since we have multiple files we haven't
+created yet but, as part of the TDD process, you:
 1. create your test
-1. run the test to see if it fails
-1. if it failed, fix the issue
+1. run the test to prove it fails
+1. fix only the error that was shown
 1. repeat from step 2 until you see green
 
 So, let's run the test suite:
@@ -937,14 +882,14 @@ rspec
 
 The first error should be:
 ```
-Failure/Error: dashboard = Pages::Dashboards::Index.new
-  
+Failure/Error: dashboard = Pages::Dashboards::Show.new
+
 NameError:
   uninitialized constant Pages
 ```
-No surprise, this is because we haven't created the `Pages::Dashboards::Index`
+No surprise, this is because we haven't created the `Pages::Dashboards::Show`
 class so let's do that. Create a new directory, `spec/pages/dashboards`, and
-then create and open `spec/pages/dashboards/index.rb`. Remembering that we only
+then create and open `spec/pages/dashboards/show.rb`. Remembering that we only
 ever fix one error at a time, we want to write as little code as possible.
 As with every file, the first line will be:
 ```ruby
@@ -963,7 +908,7 @@ Now for the class name. Since SitePrism is doing most of the work, we want our
 class to extend the `SitePrism::Page` class. This gives our class access to the
 methods that SitePrism offers for simplifying our testing.
 ```ruby
-    class Index < SitePrism::Page
+    class Show < SitePrism::Page
     end
   end
 end
@@ -971,16 +916,33 @@ end
 
 That's it, time to run the test again. The next error is:
 ```
+Failure/Error: sign_in_page = Pages::Players::SignIn.new
+
+NameError:
+  uninitialized constant Pages::Players
+```
+Create a new directory, `spec/pages/players`, and then create and open
+`spec/pages/players/sign_in.rb`.
+```ruby
+# frozen_string_literal: true
+
+module Pages
+  module Players
+    class SignIn < SitePrism::Page
+    end
+  end
+end
+```
+
+Now, running the test will show:
+```
 Failure/Error: dashboard.load
-  
+
 SitePrism::NoUrlForPageError:
   SitePrism::NoUrlForPageError
 ```
-We need to tell SitePrism what URL to navigate to. The default index path in
-Rails is just the name of the resource—"/dashboards" in this case. The
-[Rails routing docs](https://guides.rubyonrails.org/routing.html#crud-verbs-and-actions)
-do a far better job of explaining this than I ever could; they are well worth a
-read.
+We need to tell SitePrism what URL to navigate to. Since we want the dashboard
+to be the root (or landing) page, it's URL will simply be "/".
 
 The SitePrism method for setting the path is `set_url` so our class now looks
 like this:
@@ -989,8 +951,8 @@ like this:
 
 module Pages
   module Dashboards
-    class Index < SitePrism::Page
-      set_url "/dashboards"
+    class Show < SitePrism::Page
+      set_url "/"
     end
   end
 end
@@ -1001,13 +963,13 @@ After another run of the test we get:
 Failure/Error: dashboard.load
 
 ActionController::RoutingError:
-  No route matches [GET] "/dashboards"
+  No route matches [GET] "/"
 ```
 
 While we decided that we want a dashboard, we haven't actually told Rails. For a
 URL to work, we need to add a record into the Rails routes file. The router
-checks page request, works out which controller is responsible, and passes on
-the request.
+checks the page request, works out which controller is responsible, and passes
+on the request.
 
 Edit your `config/routes.rb` file to read:
 ```ruby
@@ -1017,54 +979,16 @@ Rails.application.routes.draw do
   devise_for :players
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
 
-  resources :dashboards, only: :index
-
-  root to: "dashboards#index"
+  root to: "dashboards#show"
 end
 ```
 
-The two new lines here are:
+The only new line here is:
 ```ruby
-resources :dashboards, only: :index
-
-root to: "dashboards#index"
+root to: "dashboards#show"
 ```
-You can think of a "resource" as anything that you might interact with. That’s
-pretty vague, however, so let’s dig a little deeper. Every resource can have a
-series of actions. While you can technically use any term as an action, the
-official convention is to only use `index`, `show`, `new`, `create`, `edit`,
-`update`, and `destroy`. Without getting into the details, there are also
-different "HTTP verbs" that can get sent with the request: `GET`, `POST`,
-`PATCH` or `PUT`, and `DELETE`. Once again, the
-[Rails routing docs](https://guides.rubyonrails.org/routing.html#crud-verbs-and-actions)
-do a good job of showing the relationship between HTTP verbs and controller
-actions.
-
-In the context of a game resource, the actions make a lot of sense:
-
-Verb and path      | Description
--------------------|------------------------------------------
-GET /games         | index of all games
-GET /games/new     | show the page for creating a game
-POST /games/new    | create a new game
-GET /games/1       | show game number 1
-GET /games/1/edit  | show the page for editing game number 1
-PATCH/PUT /games/1 | update game number 1
-DELETE /games/1    | delete game number 1
-
-Resources can seem a little unusual when the "thing" isn't something you store
-in the database. In the context of the dashboard, you can't create, edit,
-update, or delete the dashboard, it's just a page that displays information.
-Despite this, it's still a good idea to keep things in small, clean controllers.
-There is nothing wrong with a `DashboardsController` that only has an `index`
-action.
-
-That last line:
-```ruby
-root to: "dashboards#index"
-```
-just tells Rails that requests to your index page (i.e. https://example.com/)
-should be forwarded to the `index` action of the `DashboardsController`.
+which tells Rails that requests to your index page (i.e. https://example.com/)
+should be forwarded to the `show` action of the `DashboardsController`.
 
 Okay, run your test suite again:
 ```bash
@@ -1106,13 +1030,13 @@ Run your test suite again.
 Failure/Error: dashboard.load
 
 AbstractController::ActionNotFound:
-  The action 'index' could not be found for DashboardsController
+  The action 'show' could not be found for DashboardsController
 ```
 
-Simple enough, the `index` action needs to map to a method in the controller:
+Simple enough, the `show` action needs to map to a method in the controller:
 ```ruby
 class DashboardsController < ApplicationController
-  def index; end
+  def show; end
 end
 ```
 
@@ -1122,7 +1046,7 @@ Guess what we need to do next. Yup, run that test.
 Failure/Error: dashboard.load
 
 ActionController::MissingExactTemplate:
-  DashboardsController#index is missing a template for request formats: text/html
+  DashboardsController#show is missing a template for request formats: text/html
 ```
 
 For an action to be displayed in the browser, there needs to be a view template.
@@ -1133,7 +1057,7 @@ time.
 Templates follow the same resource + action convention (hopefully you're
 noticing a lot of consistency). Given this, you need to create the directory,
 `app/views/dashboards` and then create the file
-`app/views/dashboards/index.html.erb`. We can get into the power of ERB files
+`app/views/dashboards/show.html.erb`. We can get into the power of ERB files
 another time but just know that the Rails Asset Pipeline processes your files
 in multiple stages—one stage per file extension—in reverse order. ERB, or
 Embedded RuBy, is a format for adding dynamic content into your files. Once all
@@ -1146,14 +1070,46 @@ simply place the word "Dashboard" into this file.
 
 The next error is:
 ```
-Failure/Error: expect(dashboard.current_path).to eq(new_player_session_path)
-  
-  expected: "/players/sign_in"
-      got: "/dashboards"
+Failure/Error: expect(sign_in_page).to be_displayed
+
+SitePrism::NoUrlMatcherForPageError:
+  SitePrism::NoUrlMatcherForPageError
+```
+
+Just like the dashboard page, we need to tell SitePrism the URL of the sign-in
+page. But how are we supposed to know what URL Devise assigns? Thankfully, Rails
+can tell us all the available routes by running:
+```bash
+rails routes
+```
+One of the results will be:
+```
+new_player_session GET    /players/sign_in(.:format)         devise/sessions#new
+```
+That sounds reasonable; "players" is what we called our model and "sign_in" is
+the action we want them to take. Given this, it seems logical that the sign-in
+URL will be `/players/sign_in`.
+
+It could turn out that this is not the correct path. That's okay; we're
+just laying out what we think will happen and, if it's wrong, we'll fix it.
+
+Set the fake URL in `spec/pages/players/sign_in.rb`:
+```ruby
+class SignIn < SitePrism::Page
+  set_url "/players/sign_in"
+end
+```
+
+The next error is:
+```
+Failure/Error: expect(sign_in).to be_displayed
+
+SitePrism::NoUrlMatcherForPageError:
+  SitePrism::NoUrlMatcherForPageError
 ```
 
 This is really the whole point of what we are doing here. We want
-unauthenticated players to be sent to the sign in page but, instead, they are
+unauthenticated players to be sent to the sign-in page but, instead, they are
 being sent to the dashboard. What we want to do is tell Rails that all requests
 need to be approved by Devise. You can either do this on each of your
 controllers or you can add it globally to the `ApplicationController`. Since we
@@ -1165,39 +1121,30 @@ class ApplicationController < ActionController::Base
 end
 ```
 
-When you run the test now, SUCCESS!
-```bash
+If you run Rspec again you'll see:
+```
 1 example, 0 failures
 ```
-
-But I know you haven't actually seen anything yet so boot your Rails server:
-```bash
-rails s
-```
-
-If you try to load [http://localhost:3000](http://localhost:3000) in your
-browser, you should be taken to a login page. Currently an ugly login page but,
-don't worry, we'll get it looking sexy soon enough.
 
 Now let's make sure the authentication is working and that authenticated players
 are taken to the dashboard.
 
 We will want to test both what happens when someone logs in successfully and
 when there is some issue (e.g. incorrect password). We have the most clarity
-about how the "happy path" will work—player enters their details and they are
+about how the "happy path" will work—a player enters their details and they are
 taken to the dashboard—so it would be logical to start here.
 
 I always like to map the story first and then worry about the implementation
 details. We already have a context for "when the player is not authenticated"
 and signing in seems like it is an extension of that journey. So, what else is
 going on? Well the player is entering their login credentials so we could say
-something like " when the player is not authenticated and they enter the correct
+something like "when the player is not authenticated and they enter the correct
 credentials into the sign-in form, they are taken to the dashboard". That story
 looks like this:
 ```ruby
 context "when the player is not authenticated" do
   it "sends them to the sign-in page" do
-    dashboard = Pages::Dashboards::Index.new
+    dashboard = Pages::Dashboards::Show.new
     dashboard.load
     expect(dashboard.current_path).to eq(new_player_session_path)
   end
@@ -1210,13 +1157,15 @@ end
 ```
 
 Now that we know the behaviour we are testing, we can think about how we would
-test this. We already have an example of how to load the page from the previous
-test that we can copy in:
+test this. We already have an example of how to load a page from the previous
+test that we can be inspired from:
 ```ruby
 context "when they enter the correct credentials into the sign-in form" do
   it "takes them to the dashboard" do
-    dashboard = Pages::Dashboards::Index.new
-    dashboard.load
+    dashboard = Pages::Dashboards::Show.new
+    sign_in_page = Pages::Players::SignIn.new
+
+    sign_in_page.load
   end
 end
 ```
@@ -1224,12 +1173,14 @@ end
 Now we need to fill in and submit the sign-in form:
 ```ruby
 it "takes them to the dashboard" do
-  dashboard = Pages::Dashboards::Index.new
-  dashboard.load
+  dashboard = Pages::Dashboards::Show.new
+  sign_in_page = Pages::Players::SignIn.new
 
-  dashboard.email_field.set("player@example.com")
-  dashboard.password_field.set("Passw0rd")
-  dashboard.login_button.click
+  sign_in_page.load
+
+  sign_in_page.email_field.set("player@example.com")
+  sign_in_page.password_field.set("Passw0rd")
+  sign_in_page.login_button.click
 end
 ```
 Remember, a lot of these things haven't been implemented yet, we're just writing
@@ -1238,20 +1189,18 @@ out how we expect it to work.
 Finally, we expect the end result will be that we are on the dashboard:
 ```ruby
 it "takes them to the dashboard" do
-  dashboard = Pages::Dashboards::Index.new
-  dashboard.load
+  dashboard = Pages::Dashboards::Show.new
+  sign_in_page = Pages::Players::SignIn.new
 
-  dashboard.email_field.set("player@example.com")
-  dashboard.password_field.set("Passw0rd")
-  dashboard.login_button.click
+  sign_in_page.load
 
-  expect(page).to have_current_path("/")
-  expect(page).to have_content("Dashboard")
+  sign_in_page.email_field.set("player@example.com")
+  sign_in_page.password_field.set("Passw0rd")
+  sign_in_page.login_button.click
+
+  expect(dashboard).to be_displayed
 end
 ```
-Since a successful sign-in redirects to the root page, we can't check the
-dashboard's "official" path. Given this, we need another test to ensure the page
-loaded at root is actually the dashboard.
 
 Run your test in the expectation of failure.
 
@@ -1261,10 +1210,10 @@ NoMethodError:
 ```
 
 Okay, we expected this one since we haven't created the variable "email_field"
-yet. This needs to be added to the page class:
+yet. This needs to be added to the sign-in page class:
 ```ruby
-class Index < SitePrism::Page
-  set_url "/dashboards"
+class SignIn < SitePrism::Page
+  set_url "/players/sign_in"
 
   element :email_field, "FIXME"
 end
@@ -1289,14 +1238,14 @@ Then I move my way up from the field I selected until I find the form tag.
 [
   ![](/blog/007-cards-against-isolation-authentication/inspect-elements.png)
 ](/blog/007-cards-against-isolation-authentication/inspect-elements.png)
-Here I can see that the form has an ID of "new_player" so I'm to use that to
-narrow the search.
+Here I can see that the form has an ID of "new_player" so I'm going to use that
+to narrow the search.
 
 The CSS selector for finding an email input inside the new_player form would be
 `#new_player input[type=email]`
 ```ruby
-class Index < SitePrism::Page
-  set_url "/dashboards"
+class SignIn < SitePrism::Page
+  set_url "/players/sign_in"
 
   element :email_field, "#new_player input[type=email]"
 end
@@ -1390,36 +1339,35 @@ git add --patch config/initializers/devise.rb
 git commit
 ```
 > Disable Devise reconfirmable
->  
-> When you enable the Devise confirmable module, the default is for  
-> reconfirmable to also be enabled. Reconfirmable requires that email  
-> addresses be re-confirmed when they are changed.  
->  
-> Confirmable is being used as a form of spambot protection. We should be  
-> able to assume that, if someone can confirm their original address,  
-> they are either not a robot or they are a robot sufficiently capable of  
-> confirming email addresses and so another test is unlikely to trip them  
-> up.  
->  
-> Reconfirmable also requires an extra field in the players table that was  
+>
+> When you enable the Devise confirmable module, the default is for
+> reconfirmable to also be enabled. Reconfirmable requires that email
+> addresses be re-confirmed when they are changed.
+>
+> Confirmable is being used as a form of spambot protection. We should be
+> able to assume that, if someone can confirm their original address,
+> they are either not a robot or they are a robot sufficiently capable of
+> confirming email addresses and so another test is unlikely to trip them
+> up.
+>
+> Reconfirmable also requires an extra field in the players table that was
 > not generated
 
 When we run our tests again, we get:
 ```
 Failure/Error: expect(dashboard).to be_displayed
 ```
-but, that's weird, didn't we fix all this issues? 
+but, that's weird, didn't we fix all this issues?
 
 Obviously, we forgot something but how we can tell what that is when we can’t
 see the page‽ Thankfully, Capybara has a solution for this. By making the
 following change:
 ```ruby
-  dashboard.login_button.click
+  sign_in_page.login_button.click
 
   save_and_open_page
 
-  expect(page).to have_current_path("/")
-  expect(page).to have_content("Dashboard")
+  expect(dashboard).to be_displayed
 end
 ```
 Capybara will save the state of the page at that point in time. By default, you
@@ -1430,7 +1378,7 @@ in Gemfile:
 group :test do
   gem "cuprite", "~> 0.11.0"
   gem "launchy", "~> 2.5.0"
-  gem "site_prism", "~> 3.6.0"
+  gem "site_prism", "~> 3.7.0"
 end
 ```
 Then install and commit since it's outside of our current story:
@@ -1440,7 +1388,7 @@ git add Gemfile Gemfile.lock
 git commit
 ```
 > Add launchy gem
->  
+>
 > Launchy is used by Capybara to automatically open debugging files in the
 > browser
 
@@ -1464,79 +1412,6 @@ end
 ```
 and now our test passes. Just remember to remove the `save_and_open_page`.
 
-After converting a test from red to green, it's a good idea to stop and consider
-whether the code you've written is good enough. If we have concerns with our
-application code, we now have tests that will verify if we break anything. If we
-think the test could be better, we know the application code is working and so
-we can refactor until the modified test works.
-
-Our first test referred to `Pages::Dashboards::Index` because we explicitly
-wanted to test that a protected page would cause a redirect. It is only because
-of a side-effect of how we have implemented Devise that trying to get to the
-dashboard takes you to an authentication page. Given the dashboard doesn’t have
-a form with input fields, it seems wrong for us to be storing references to
-them. Really, the sign-in page needs its own page. Create the directory,
-`spec/pages/players`, and then the file, `spec/pages/players/sign_in.rb`:
-```ruby
-# frozen_string_literal: true
-
-module Pages
-  module Players
-    class SignIn < SitePrism::Page
-      set_url "/players/sign_in"
-    end
-  end
-end
-```
-and then move the elements from `Pages::Dashboards::Index` into
-`Pages::Players::SignIn`:
-```ruby
-# frozen_string_literal: true
-
-module Pages
-  module Dashboards
-    class Index < SitePrism::Page
-      set_url "/dashboards"
-    end
-  end
-end
-```
-```ruby
-# frozen_string_literal: true
-
-module Pages
-  module Players
-    class SignIn < SitePrism::Page
-      set_url "/players/sign_in"
-
-      element :email_field, "#new_player input[type=email]"
-      element :password_field, "#new_player input[type=password]"
-      element :login_button, "#new_player input[type=submit]"
-    end
-  end
-end
-```
-Now change the test to read:
-```ruby
-it "takes them to the dashboard" do
-  signin_page = Pages::Players::SignIn.new
-  signin_page.load
-
-  signin_page.email_field.set("player@example.com")
-  signin_page.password_field.set("Passw0rd")
-  signin_page.login_button.click
-
-  expect(page).to have_current_path("/")
-  expect(page).to have_content("Dashboard")
-end
-```
-
-Run your test suite again and you should get all green but now the grouping of
-concepts is more logical. Of course, we could have created
-`Pages::Players::SignIn` when we were creating the test but you'll find it less
-mentally taxing if you take small steps to get to green as quickly as possible
-and then refactor.
-
 Before we finish up, we should test the "unhappy paths". The first candidate
 should surely be the path that tripped us up, an unconfirmed player.
 
@@ -1545,14 +1420,15 @@ context "when the player is not authenticated" do
   ...
   context "when they have not confirmed their account" do
     it "shows an error message" do
-      signin_page = Pages::Players::SignIn.new
-      signin_page.load
+      sign_in_page = Pages::Players::SignIn.new
 
-      signin_page.email_field.set("player@example.com")
-      signin_page.password_field.set("Passw0rd")
-      signin_page.login_button.click
+      sign_in_page.load
 
-      expect(signin_page.alert).to have_content(
+      sign_in_page.email_field.set("player@example.com")
+      sign_in_page.password_field.set("Passw0rd")
+      sign_in_page.login_button.click
+
+      expect(sign_in_page.alert).to have_content(
         "You have to confirm your email address before continuing."
       )
     end
@@ -1562,7 +1438,7 @@ end
 
 This is mostly the same as our previous test except for that expectation:
 ```ruby
-expect(signin_page.alert).to have_content(
+expect(sign_in_page.alert).to have_content(
   "You have to confirm your email address before continuing."
 )
 ```
@@ -1616,21 +1492,21 @@ that the confirmed player doesn't exist in that test yet, so let's add it:
 context "when they enter the correct credentials into the sign-in form" do
   it "takes them to the dashboard" do
     confirmed_player
+    dashboard = Pages::Dashboards::Show.new
+    sign_in_page = Pages::Players::SignIn.new
 
-    signin_page = Pages::Players::SignIn.new
-    signin_page.load
-  
-    signin_page.email_field.set("player@example.com")
-    signin_page.password_field.set("Passw0rd")
-    signin_page.login_button.click
-  
-    expect(page).to have_current_path("/")
-    expect(page).to have_content("Dashboard")
+    sign_in_page.load
+
+    sign_in_page.email_field.set("player@example.com")
+    sign_in_page.password_field.set("Passw0rd")
+    sign_in_page.login_button.click
+
+    expect(dashboard).to be_displayed
   end
 end
 ```
 
-Run your tests again and make sure that test is now passing.
+Run your tests again and make sure that now only your new test is failing.
 
 Now that we have a confirmed player we need an unconfirmed player:
 ```ruby
@@ -1658,15 +1534,15 @@ To correct this, we need to create the unconfirmed player:
 context "when they have not confirmed their account" do
   it "shows an error message" do
     unconfirmed_player
+    sign_in_page = Pages::Players::SignIn.new
 
-    signin_page = Pages::Players::SignIn.new
-    signin_page.load
+    sign_in_page.load
 
-    signin_page.email_field.set("player@example.com")
-    signin_page.password_field.set("Passw0rd")
-    signin_page.login_button.click
+    sign_in_page.email_field.set("player@example.com")
+    sign_in_page.password_field.set("Passw0rd")
+    sign_in_page.login_button.click
 
-    expect(signin_page.alert).to have_content(
+    expect(sign_in_page.alert).to have_content(
       "You have to confirm your email address before continuing."
     )
   end
@@ -1680,30 +1556,30 @@ set up now, these are going to be easy:
 context "when they enter an incorrect email address" do
   it "shows an error message" do
     confirmed_player
+    sign_in_page = Pages::Players::SignIn.new
 
-    signin_page = Pages::Players::SignIn.new
-    signin_page.load
-  
-    signin_page.email_field.set("invalid@example.com")
-    signin_page.password_field.set("Passw0rd")
-    signin_page.login_button.click
+    sign_in_page.load
 
-    expect(signin_page.alert).to have_content("Invalid Email or password.")
+    sign_in_page.email_field.set("invalid@example.com")
+    sign_in_page.password_field.set("Passw0rd")
+    sign_in_page.login_button.click
+
+    expect(sign_in_page.alert).to have_content("Invalid Email or password.")
   end
 end
 
 context "when they enter an incorrect password" do
   it "shows an error message" do
     confirmed_player
+    sign_in_page = Pages::Players::SignIn.new
 
-    signin_page = Pages::Players::SignIn.new
-    signin_page.load
-  
-    signin_page.email_field.set("player@example.com")
-    signin_page.password_field.set("invalid")
-    signin_page.login_button.click
+    sign_in_page.load
 
-    expect(signin_page.alert).to have_content("Invalid Email or password.")
+    sign_in_page.email_field.set("player@example.com")
+    sign_in_page.password_field.set("invalid")
+    sign_in_page.login_button.click
+
+    expect(sign_in_page.alert).to have_content("Invalid Email or password.")
   end
 end
 ```
@@ -1720,21 +1596,18 @@ the email address field, while restricted to the `new_player` form, is just
 any input that is of type "email". Now that our tests are passing, we can take
 a look at the elements on the page and see if there is a better way.
 
-It turns out that Devise is using Rails naming conventions. It is a little
-awkward to think about because it is generating a form based upon the player
-even though the conceptual action is signing in. This isn't the recommended
-approach and, while Devise saves an enormous amount of time on apps like this,
-is certainly has its quirks.
+It turns out that Devise is using Rails naming conventions, which shouldn't
+really come as a surprise.
 
 The convention for naming form inputs is `model[attribute]`. So the email
-attribute on a player is `player[email]`. We can modify `Pages::Players::SignIn`
-to use this convention like:
+attribute on a player is named `player[email]`. We can modify
+`Pages::Players::SignIn` to use this convention like:
 ```ruby
 element :email_field, "#new_player input[name='player[email]']"
 element :password_field, "#new_player input[name='player[password]']"
 ```
-Now the `email_field` selector reads "get an input with the name 'player[email]'
-inside an element with the ID new_player".
+Now the "email_field" selector reads "get an input with the name 'player[email]'
+inside an element with the ID 'new_player'".
 
 Make sure you still have 5 green tests and then you're done. Time to commit:
 ```bash
@@ -1763,7 +1636,7 @@ really small pieces. Building something huge can be terribly overwhelming but
 building lots of tiny things can feel totally achievable.
 
 If you've had any issues or there is anything you want to check, you can
-[review my repository as it looked after this commit](https://github.com/HashNotAdam/cards-against-isolation/tree/6d6a3b6c153974cc7d1b7fc5223d3675d3189b90).
+[review my repository as it looked after this commit](https://github.com/HashNotAdam/cards-against-isolation/tree/031f1139a0b3b472de582af7b6fecae53cd99c6d).
 
 In [the next post](/blog/cards-against-isolation-complete-devise-testing/),
 we finish testing Devise.

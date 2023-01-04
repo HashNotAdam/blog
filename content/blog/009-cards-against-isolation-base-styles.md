@@ -41,17 +41,16 @@ introduce drastic changes to the installation process so we're going to lock
 the version to avoid discrepancies between this tutorial and what you see.
 Instead, run:
 ```bash
-yarn add tailwindcss@1.8.2 --tilde
+yarn add tailwindcss@2.0.2 postcss@8.2.1 autoprefixer@10.1.0 --tilde
 ```
 The `--tilde` is like the twiddle wakka in the Gemfile, it will allow you to get
-bug fixes but not jump to 1.9.0 or above.
+bug fixes but not jump to 2.1.0/8.3.0/10.2.0 or above.
 
 ### Webpack
 
 That will install all the Tailwind files into your `node_modules` directory but
 they aren't actually loaded yet. Unfortunately, before we do that, we need to go
-on another little story arc (this blog is starting to remind me of my favourite
-animes).
+on another little story arc.
 
 For the longest time, there wasn’t a comprehensive or standard way to manage
 assets. “Managing assets” could be resizing images, making CSS stylesheets
@@ -59,12 +58,12 @@ smaller, transcoding new JavaScript to something more compatible, etc. Rails
 addressed this problem by creating the Asset Pipeline which is extraordinarily
 powerful. Since then, Webpack has swept the industry, particularly within the
 JavaScript community. To be honest, I find Webpack to be horrible to work with
-and dread when I need to work with it but it’s a standard. Since we installed
+and dread when I need to configure it but it’s a standard. Since we installed
 Tailwind via Yarn, it is a JavaScript dependency and isn’t directly visible to
 Rails but it is visible to Webpack.
 
 What we need to do is create a new CSS stylesheet that will be run through
-Webpack. This this stylesheet will be completely independent of the one that
+Webpack. Because this stylesheet will be completely independent of the one that
 runs through the Rails Asset Pipeline, it’s going to be easier to manage if it
 is kept in a separate place. This means you end up with two places that
 stylesheets can be in and, for that reason, I recommend only using the new
@@ -151,7 +150,7 @@ with:
 <%= stylesheet_pack_tag "application" %>
 ```
 
-Tailwind should now be running but we should test to make sure. Load your
+Tailwind should now be integrated but we should test to make sure. Load your
 landing page in the browser (`http://localhost:3000`). Make sure you have the
 Rails server running in a terminal tab (`rails s`).
 
@@ -197,8 +196,8 @@ Saying this, it’s absolutely vital that the app be built in a responsive manne
 Not only could it be used on many devices from computers to mobiles, I fully
 expect this to happen. I like to have Zoom running on my computer while I use my
 phone for a game whereas I know people who like to do everything on their
-computer. These days, there really isn’t an excuse for not building in a
-responsive manner.
+computer. These days, there really isn’t an excuse for not building
+responsively.
 
 We'll start at the top of `app/views/layouts/application.html.erb` and work our
 way down.
@@ -273,6 +272,9 @@ Add the `defer` attribute to the script and change from single to double-quotes:
 ```erb
 <%= javascript_pack_tag "application", defer: true %>
 ```
+Even though this is in a `.erb` file, anything inside the `<%= %>` tags is Ruby
+code and, as such, should follow the same style conventions we use in a `.rb`
+file.
 
 We should commit this small change because it may not be obvious why we need to
 defer the script. These sorts of obscure changes are a good candidate for a
