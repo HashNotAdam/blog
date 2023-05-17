@@ -2,8 +2,6 @@
 title: "Why you shouldn't exclusively hire senior developers"
 date: 2023-05-19T09:00:00+10:00
 slug: "why-you-shouldnt-exclusively-hire-senior-developers"
-aliases:
-  - /blog/why-you-shouldnt-exclusively-hire-senior-developers
 description: "Why exclusively hiring senior developers could be sabotaging your company's success"
 keywords: []
 draft: false
