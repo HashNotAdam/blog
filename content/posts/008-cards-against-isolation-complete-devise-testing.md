@@ -2,6 +2,8 @@
 title: "Cards Against Isolation (Complete Devise Testing)"
 date: 2020-09-03T20:00:00+10:00
 slug: "cards-against-isolation-complete-devise-testing"
+aliases:
+  - /blog/cards-against-isolation-complete-devise-testing
 description: ""
 keywords: []
 draft: false

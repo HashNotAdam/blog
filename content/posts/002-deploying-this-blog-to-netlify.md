@@ -2,6 +2,8 @@
 title: "Deploying this blog to Netlify"
 date: 2020-07-18T20:22:22+10:00
 slug: "deploying-this-blog-to-netlify"
+aliases:
+  - /blog/deploying-this-blog-to-netlify
 description: ""
 keywords: []
 draft: false

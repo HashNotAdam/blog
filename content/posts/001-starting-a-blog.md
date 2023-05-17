@@ -2,6 +2,8 @@
 title: "Starting a blog"
 date: 2020-07-18T19:01:05+10:00
 slug: "starting-a-blog"
+aliases:
+  - /blog/starting-a-blog
 description: ""
 keywords: []
 draft: false

@@ -2,6 +2,8 @@
 title: "Cards Against Isolation (Installation)"
 date: 2020-08-13T16:30:10+10:00
 slug: "cards-against-isolation-installation"
+aliases:
+  - /blog/cards-against-isolation-installation
 description: ""
 keywords: []
 draft: false

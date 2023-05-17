@@ -2,6 +2,8 @@
 title: "Cards Against Isolation (Creating A Game)"
 date: 2020-09-15T10:37:11+10:00
 slug: "cards-against-isolation-creating-a-game"
+aliases:
+  - /blog/cards-against-isolation-creating-a-game
 description: ""
 keywords: []
 draft: false
@@ -796,7 +798,7 @@ games table has a column called `owner_id`.
 Test error:
 ```
 Failure/Error: expect(new_game.players).to include player
-     
+
 NoMethodError:
   undefined method `players'
 ```
@@ -838,7 +840,7 @@ but also helps to isolate the logic with an easy to understand method name.
 Test error:
 ```
 Failure/Error: expect(new_game.players).to include player
-     
+
 NoMethodError:
   undefined method `players'
 ```
@@ -946,7 +948,7 @@ end
 Test error:
 ```
 Failure/Error: show_game_page = Pages::Games::Show.new
-     
+
 NameError:
   uninitialized constant Pages::Games::Show
 ```
@@ -969,7 +971,7 @@ end
 Test error:
 ```
 Failure/Error: expect(show_game_page).to be_displayed(id: new_game.id)
-     
+
 SitePrism::NoUrlMatcherForPageError:
   SitePrism::NoUrlMatcherForPageError
 ```
@@ -1028,7 +1030,7 @@ resources :games, only: %i[new create show]
 Test error:
 ```
 Failure/Error: new_game_page.create_button.click
-     
+
 AbstractController::ActionNotFound:
   The action 'show' could not be found for GamesController
 ```
@@ -1050,7 +1052,7 @@ end
 Test error:
 ```
 Failure/Error: new_game_page.create_button.click
-     
+
 ActionController::MissingExactTemplate:
   GamesController#show is missing a template for request formats: text/html
 ```
@@ -1066,7 +1068,7 @@ prove it's working.
 Test error:
 ```
 Failure/Error: <%= @game.name %>
-     
+
 ActionView::Template::Error:
   undefined method `name' for nil:NilClass
 ```
@@ -1247,8 +1249,8 @@ git commit
 ```
 
 > Remove the Rubocop maximum lines rule for feature specs
->  
-> Because feature specs can be slow, it can be helpful to test many things  
+>
+> Because feature specs can be slow, it can be helpful to test many things
 > in each test. This increases the number of lines in the tests
 
 Now the remaining files can be committed:

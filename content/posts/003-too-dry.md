@@ -2,6 +2,8 @@
 title: "Too DRY (I should have repeated myself)"
 date: 2020-07-25T17:54:58+10:00
 slug: "too-dry"
+aliases:
+  - /blog/too-dry
 description: ""
 keywords: []
 draft: false

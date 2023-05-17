@@ -2,6 +2,8 @@
 title: "Cards Against Isolation (Authentication)"
 date: 2020-08-27T23:19:18+10:00
 slug: "cards-against-isolation-authentication"
+aliases:
+  - /blog/cards-against-isolation-authentication
 description: ""
 keywords: []
 draft: false

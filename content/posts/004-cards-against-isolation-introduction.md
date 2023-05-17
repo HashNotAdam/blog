@@ -2,6 +2,8 @@
 title: "Cards Against Isolation (Introduction)"
 date: 2020-07-28T09:18:47+10:00
 slug: "cards-against-isolation-introduction"
+aliases:
+  - /blog/cards-against-isolation-introduction
 description: ""
 keywords: []
 draft: false

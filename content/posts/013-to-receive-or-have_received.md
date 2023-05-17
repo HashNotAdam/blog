@@ -2,6 +2,8 @@
 title: "To receive or have_received"
 date: 2023-01-05T12:00:00+11:00
 slug: "to-receive-or-have_received"
+aliases:
+  - /blog/to-receive-or-have_received
 description: "Why I'm preferencing an upfront expectation in RSpec over using have_received"
 keywords: []
 draft: false

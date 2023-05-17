@@ -2,6 +2,8 @@
 title: "In defence of Rails"
 date: 2022-06-11T15:50:00+10:00
 slug: "in-defence-of-rails"
+aliases:
+  - /blog/in-defence-of-rails
 description: ""
 keywords: []
 draft: false
@@ -38,7 +40,7 @@ know what your ORM is doing. While I respect their perspectives, my experience
 is that there is a finite amount of information that anyone can take in and
 trying to learn everything at once leads to someone who isn't very good at
 anything; at least not for many years. You don't become a great engineer from
-a few months of cramming; it's a life of continual learning. 
+a few months of cramming; it's a life of continual learning.
 
 It's certainly true to say that if you take the approachable version of Rails
 and scale it up to a large organisation, you're going to have a bad time. The

@@ -2,6 +2,8 @@
 title: "Multiple subdomains with Rails... and Australian domains"
 date: 2021-10-02T10:53:14+10:00
 slug: "multiple-subdomains-with-rails"
+aliases:
+  - /blog/multiple-subdomains-with-rails
 description: ""
 keywords: []
 draft: false

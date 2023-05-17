@@ -2,6 +2,8 @@
 title: "Cards Against Isolation (Base Styles)"
 date: 2020-09-13T16:30:00+10:00
 slug: "cards-against-isolation-base-styles"
+aliases:
+  - /blog/cards-against-isolation-base-styles
 description: ""
 keywords: []
 draft: false
@@ -114,7 +116,7 @@ import "stylesheets/application"
 ### Rails templates
 
 Finally, the new stylesheet needs to be loaded into the HTML. Rails uses a
-layered approach to theming/templating. At the top-most level is 
+layered approach to theming/templating. At the top-most level is
 `app/views/layouts/application.html.erb` which should be used for the outer
 elements that will exist on every page.
 
@@ -229,7 +231,7 @@ us. When loading a page, (a massive oversimplification is that) the browser will
 read from top to bottom, rendering each piece as it goes. By default, when the
 browser reaches a CSS stylesheet or JavaScript, it will stop rendering. This is
 because either could change the elements on the page and so it could render
-elements only to find it needs to re-render. 
+elements only to find it needs to re-render.
 
 For CSS, this is fine, we want our page to be rendered with the styles already
 applied. It does mean that you should keep your CSS lean so it loads quickly but
@@ -286,12 +288,12 @@ git commit
 ```
 
 > Defer loading of application JavaScript
->  
-> Browsers need to stop rendering a page while they download and parse  
-> JavaScript files. This increases the perceived load time of the page  
-> and decreases user satisfaction.  
->  
-> The `defer` attribute allows the browser to download the JavaScript in  
+>
+> Browsers need to stop rendering a page while they download and parse
+> JavaScript files. This increases the perceived load time of the page
+> and decreases user satisfaction.
+>
+> The `defer` attribute allows the browser to download the JavaScript in
 > the background and only parse it once the DOM has loaded
 
 Be careful to leave in the line breaks in the commit message. Like your code,
@@ -596,9 +598,9 @@ git commit
 ```
 
 > Add base CSS styles
->  
-> Tailwind CSS includes normalize.css which removes all the default  
-> styling from elements. These styles do just enough to make the interface  
+>
+> Tailwind CSS includes normalize.css which removes all the default
+> styling from elements. These styles do just enough to make the interface
 > functional without introducing a true design
 
 ## Tailwind upcoming changes
