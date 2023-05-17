@@ -59,7 +59,7 @@ copyright = "© {year}"
   identifier = "blog"
   name = "blog"
   title = "Blog"
-  url = "/blog"
+  url = "/posts"
 
 [[menu.main]]
   identifier = "subscribe"
